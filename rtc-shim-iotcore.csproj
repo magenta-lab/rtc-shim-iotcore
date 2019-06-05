@@ -119,17 +119,17 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ChangeTimePage.xaml.cs">
+    <Compile Include="Pages\ChangeTimePage.xaml.cs">
       <DependentUpon>ChangeTimePage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="MainPage.xaml.cs">
+    <Compile Include="Pages\MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="MCP7940N.cs" />
+    <Compile Include="RTC\MCP7940N.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RTCManager.cs" />
-    <Compile Include="RTCManagerAsync.cs" />
-    <Compile Include="TimeEventArgs.cs" />
+    <Compile Include="RTC\RTCManager.cs" />
+    <Compile Include="RTC\RTCManagerAsync.cs" />
+    <Compile Include="RTC\TimeEventArgs.cs" />
   </ItemGroup>
   <ItemGroup>
     <AppxManifest Include="Package.appxmanifest">
@@ -152,11 +152,11 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Page Include="ChangeTimePage.xaml">
+    <Page Include="Pages\ChangeTimePage.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="MainPage.xaml">
+    <Page Include="Pages\MainPage.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
