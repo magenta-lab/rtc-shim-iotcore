@@ -5,4 +5,4 @@ This project requires a minimum version of **Windows 10 version 1809 (10.0; buil
   ![MinimumCompatibility2](https://user-images.githubusercontent.com/27868408/58882354-5fd17380-86dc-11e9-8bd4-0918de673ac0.png)
 ### Usage:
 - Clone the repo, build it and run it into your iotcore device.
-- Use connector class [MCP7940N](MCP7940N.cs) or a time manager class between [RTCManager](RTCManager.cs) and [RTCManagerAsync](RTCManagerAsync.cs) and incorporate them into your project.
+- Use connector class [MCP7940N](RTC/MCP7940N.cs) or a time manager class between [RTCManager](RTC/RTCManager.cs) and [RTCManagerAsync](RTC/RTCManagerAsync.cs) and incorporate them into your project ([RTC](RTC) folder).
