@@ -8,21 +8,38 @@ using Windows.Devices.I2c;
 
 namespace rtc_shim_iotcore
 {
-    class MCP7940N
+    /// <summary>
+    /// Used to comunicate to piFace RTC shim.
+    /// Exposes methods to get and set the clock.
+    /// First you have to call Initialize, then you can use GetTime and SetTime and also control connectivity with IsConnected
+    /// </summary>
+    public class MCP7940N
     {
+        public static bool Initialized = false;
+        private static MCP7940N _instance;
         bool Connected { get; set; }
-        byte[] DeviceIdentifier { get; set; }
-
-        I2cDevice Slave { get; set; }
+        private I2cDevice Slave { get; set; }
 
         private byte I2C_ADDRESS = 0x6f;
-        private string I2C_CHANNEL = "I2C1";
-        public MCP7940N()
+        public static string CHANNEL = null;
+        private string I2C_CHANNEL;
+        public static MCP7940N Instance()
         {
-
+            if (_instance == null)
+            {
+                if (CHANNEL == null)
+                {
+                    _instance = new MCP7940N();
+                }
+                else
+                {
+                    _instance = new MCP7940N(CHANNEL);
+                }
+            }
+            return _instance;
         }
 
-        public MCP7940N(string i2c_channel)
+        private MCP7940N(string i2c_channel = "I2C1")
         {
             this.I2C_CHANNEL = i2c_channel;
         }
@@ -34,8 +51,9 @@ namespace rtc_shim_iotcore
 
         public async Task Initialize()
         {
+            if (Initialized && Connected)
+                return;
             var DIS = await DeviceInformation.FindAllAsync(I2cDevice.GetDeviceSelector(I2C_CHANNEL));
-
             if (!DIS.Any())
             {
                 throw new Exception("No I2C connected.");
@@ -45,6 +63,7 @@ namespace rtc_shim_iotcore
             i2cSettings.BusSpeed = I2cBusSpeed.FastMode;
             var i2cDevice = await I2cDevice.FromIdAsync(DIS[0].Id, i2cSettings);
             this.Slave = i2cDevice ?? throw new Exception("device " + i2cSettings.SlaveAddress + " at ic " + DIS[0].Id + " unavailable");
+            Initialized = true;
             Connected = true;
         }
 

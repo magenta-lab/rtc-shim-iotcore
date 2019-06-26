@@ -6,14 +6,29 @@ using System.Threading.Tasks;
 
 namespace rtc_shim_iotcore
 {
-    class RTCManagerAsync
+    public class RTCManagerAsync
     {
-        MCP7940N rtc_controller;
-        Windows.UI.Xaml.DispatcherTimer dt;
-
+        private MCP7940N rtc_controller;
+        private Windows.UI.Xaml.DispatcherTimer dt;
         public event EventHandler TimeChanged;
-
         private DateTime current_time;
+        public static TimeSpan DELAY_UPDATES = TimeSpan.FromSeconds(20);
+
+        public RTCManagerAsync(MCP7940N instance)
+        {
+            current_time = new DateTime();
+            rtc_controller = instance;
+        }
+
+        public bool SetTime(DateTime new_time)
+        {
+            if (rtc_controller == null)
+            {
+                return false;
+            }
+            rtc_controller.SetTime(new_time);
+            return true;
+        }
 
         public DateTime GetTime()
         {
@@ -32,20 +47,10 @@ namespace rtc_shim_iotcore
             }
         }
 
-        public RTCManagerAsync()
+        public void start()
         {
-            current_time = new DateTime();
-        }
-
-        public async void start(string i2c_channel = "I2C1")
-        {
-            if (rtc_controller == null)
-            {
-                rtc_controller = new MCP7940N(i2c_channel);
-                await rtc_controller.Initialize();
-            }
             dt = new Windows.UI.Xaml.DispatcherTimer();
-            dt.Interval = TimeSpan.FromSeconds(20);
+            dt.Interval = DELAY_UPDATES;
             dt.Tick += dt_ticker;
             dt.Start();
         }
@@ -53,7 +58,7 @@ namespace rtc_shim_iotcore
         private void dt_ticker(object sender, object e)
         {
             DateTime newTime = rtc_controller.GetTime();
-            if (differentTime(newTime, current_time))
+            if (CompareTime(newTime, current_time))
             {
                 current_time = newTime;
                 if (TimeChanged != null)
@@ -69,19 +74,9 @@ namespace rtc_shim_iotcore
         /// <param name="newTime"></param>
         /// <param name="current_time"></param>
         /// <returns></returns>
-        private bool differentTime(DateTime newTime, DateTime current_time)
+        private bool CompareTime(DateTime newTime, DateTime current_time)
         {
             return newTime.Year != current_time.Year || newTime.Month != current_time.Month || newTime.Day != current_time.Day || newTime.Hour != current_time.Hour || newTime.Minute != current_time.Minute;
-        }
-
-        public bool SetTime(DateTime new_time)
-        {
-            if (rtc_controller == null)
-            {
-                return false;
-            }
-            rtc_controller.SetTime(new_time);
-            return true;
         }
 
         public bool isAlive()

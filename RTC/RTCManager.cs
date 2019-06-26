@@ -6,26 +6,20 @@ using System.Threading.Tasks;
 
 namespace rtc_shim_iotcore
 {
-    class RTCManager
+    public class RTCManager
     {
-
-        MCP7940N rtc_controller;
+        private MCP7940N rtc_controller;
 
         public DateTime GetTime()
         {
             return rtc_controller.GetTime();
         }
 
-        public RTCManager()
+        public RTCManager(MCP7940N instance)
         {
-
+            rtc_controller = instance;
         }
 
-        public async void Start(string i2c_channel = "I2C1")
-        {
-            rtc_controller = new MCP7940N(i2c_channel);
-            await rtc_controller.Initialize();
-        }
         public bool SetTime(DateTime new_time)
         {
             if (rtc_controller == null)
