@@ -5,7 +5,7 @@
     xmlns:local="using:rtc_shim_iotcore"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    mc:Ignorable="d" Foreground="White" Width="800" Height="480" Background="#FF252323" Loaded="MainPage_Loaded">
+    mc:Ignorable="d" Foreground="White" Background="#FF252323" Loaded="MainPage_Loaded">
     <Grid x:Name="mainGrid">
         <TextBlock x:Name="txtClock" HorizontalAlignment="Center" Text="10:38" TextWrapping="Wrap" VerticalAlignment="Top" FontSize="72" Margin="0,93,0,0"/>
         <TextBlock x:Name="txtDate" HorizontalAlignment="Center" Margin="0,251,0,0" Text="Friday 17/05/2019" TextWrapping="Wrap" VerticalAlignment="Top" FontSize="48"/>

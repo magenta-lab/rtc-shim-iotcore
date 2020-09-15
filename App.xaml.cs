@@ -30,7 +30,15 @@ namespace rtc_shim_iotcore
         {
             this.InitializeComponent();
             this.Suspending += OnSuspending;
-            RTCManagerAsync timeManager = new RTCManagerAsync();
+            initClock();
+
+        }
+
+        private async void initClock()
+        {
+            MCP7940N instance = MCP7940N.Instance();
+            await instance.Initialize();
+            RTCManagerAsync timeManager = new RTCManagerAsync(MCP7940N.Instance());
             timeManager.start();
             MainPage.setTimeManager(timeManager);
             ChangeTimePage.setTimeManager(timeManager);

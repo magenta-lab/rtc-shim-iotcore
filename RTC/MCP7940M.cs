@@ -8,41 +8,35 @@ using Windows.Devices.I2c;
 
 namespace rtc_shim_iotcore
 {
-    /// <summary>
-    /// Used to comunicate to piFace RTC shim.
-    /// Exposes methods to get and set the clock.
-    /// First you have to call Initialize, then you can use GetTime and SetTime and also control connectivity with IsConnected
-    /// </summary>
-    public class MCP7940N
+    public class MCP7940Mmmm
     {
-        public static DateTime FailedDateTimeRead0 = new DateTime(2002, 2, 2);
         public static DateTime FailedDateTimeRead1 = new DateTime(2003, 3, 3);
         public static DateTime FailedDateTimeRead2 = new DateTime(2004, 4, 4);
         public static bool Initialized = false;
-        private static MCP7940N _instance;
+        private static MCP7940Mmmm _instance;
         bool Connected { get; set; }
         private I2cDevice Slave { get; set; }
 
         private byte I2C_ADDRESS = 0x6f;
         public static string CHANNEL = null;
         private string I2C_CHANNEL;
-        public static MCP7940N Instance()
+        private static MCP7940Mmmm Instance()
         {
             if (_instance == null)
             {
                 if (CHANNEL == null)
                 {
-                    _instance = new MCP7940N();
+                    _instance = new MCP7940Mmmm();
                 }
                 else
                 {
-                    _instance = new MCP7940N(CHANNEL);
+                    _instance = new MCP7940Mmmm(CHANNEL);
                 }
             }
             return _instance;
         }
 
-        private MCP7940N(string i2c_channel = "I2C1")
+        public MCP7940Mmmm(string i2c_channel = "I2C1")
         {
             this.I2C_CHANNEL = i2c_channel;
         }
@@ -73,14 +67,8 @@ namespace rtc_shim_iotcore
         public DateTime GetTime()
         {
             byte[] readBuffer = new byte[7];
-            try
-            {
-                this.Slave.WriteRead(new byte[] { 0x00 }, readBuffer);
-            }
-            catch (Exception)
-            {
-                return FailedDateTimeRead0;
-            }
+
+            this.Slave.WriteRead(new byte[] { 0x00 }, readBuffer);
 
             return BufferToDateTime(readBuffer);
         }
@@ -99,6 +87,7 @@ namespace rtc_shim_iotcore
         {
             return (byte)(((int)val / 10 * 16) + ((int)val % 10));
         }
+
         private DateTime BufferToDateTime(byte[] dateTimeBuffer)
         {
             //set 7th bit to zero
@@ -108,7 +97,7 @@ namespace rtc_shim_iotcore
             var hour = bcd2dec(dateTimeBuffer[2]);
             var dayofWeek = bcd2dec(dateTimeBuffer[3]) & 7;
             var day = bcd2dec(dateTimeBuffer[4]);
-            var month = bcd2dec((byte)(dateTimeBuffer[5] & 31));
+            var month = bcd2dec(dateTimeBuffer[5]);
             var year = 2000 + bcd2dec(dateTimeBuffer[6]);
             if (year == 0 || month == 0 || day == 0)
             {
@@ -124,7 +113,7 @@ namespace rtc_shim_iotcore
         private byte[] DateTime2Byte(DateTime dateTime)
         {
             var dateArray = new byte[9];
-            bool leap_year = dateTime.Year % 4 == 0;
+
             dateArray[0] = 0;
             //if we don't set 7-th bit to 1, clock won't start
             dateArray[1] = (byte)(byte2bcd(Convert.ToByte(dateTime.Second)) | 128);
@@ -133,15 +122,29 @@ namespace rtc_shim_iotcore
             dateArray[3] = byte2bcd(Convert.ToByte(dateTime.Hour));
             dateArray[4] = byte2bcd(Convert.ToByte(dateTime.DayOfWeek) | 32);
             dateArray[5] = byte2bcd(Convert.ToByte(dateTime.Day));
-            dateArray[6] = byte2bcd(Convert.ToByte(leap_year ? dateTime.Month + 32 : dateTime.Month));
+            dateArray[6] = byte2bcd(Convert.ToByte(dateTime.Month));
             dateArray[7] = byte2bcd(Convert.ToByte(dateTime.Year - 2000));
             dateArray[8] = 0;
 
             return dateArray;
         }
+
         public bool IsConnected()
         {
             return Connected;
         }
+
+        internal void Close()
+        {
+            try
+            {
+                Slave.Dispose();
+            }
+            catch (Exception)
+            {
+
+            }
+        }
     }
 }
+

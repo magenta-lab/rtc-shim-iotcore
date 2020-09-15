@@ -61,7 +61,7 @@ namespace rtc_shim_iotcore
 
         private void MainPage_Loaded(object sender, RoutedEventArgs e)
         {
-
+            CurrentTime = timeManager.ReadTime();
         }
 
         private void BtnChangeTime_Click(object sender, RoutedEventArgs e)
